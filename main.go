@@ -8,6 +8,15 @@ import (
 	"github.com/urfave/cli"
 )
 
+type ConfigurationModel struct {
+	Configuration []ConfigurationRecord `json:"configuration"`
+}
+
+type ConfigurationRecord struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
 func main() {
 	var request string
 	app := &cli.App{
@@ -20,9 +29,9 @@ func main() {
 			},
 		},
 		Action: func(c *cli.Context) error {
-			//{"configuration": [{"name": "engine","value": "mysql"},];}
 			var confModel ConfigurationModel
-			err := json.Unmarshal([]byte(c.String("c")), &confModel)
+			var result []byte = []byte(c.String("c"))
+			err := json.Unmarshal(result, &confModel)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
@@ -41,6 +50,9 @@ func main() {
 					log.Fatal(err.Error())
 				}
 			}
+			/*
+				./postgres-cli --c {"configuration":[{"name":"wal_level","value":"hot_standby"}]}
+			*/
 			return nil
 		},
 	}
